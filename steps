@@ -1,0 +1,63 @@
+Constraints-
+1.Active days for production and change-over per month is 30 days
+2.Consecutive days of production per batch is 14 days
+3.You must do production at least one day for each month
+4.After consecutive run of a product for 14 days either a changeover is required if switching to another product or a non-production day is required if continuing production of same product
+5.Minimum run for a production is 1 day
+6.Production should be able to meet at least 50% of total demand each month (carried forward inventory can also be used for meeting demand)
+7.Production should produce atleast 30% of total quarterly demand for each product
+8.Changeover time is specified for changeover from a product to another product
+9.Inventory can be carried forward to next month at nil cost in same plant and cannot be transferred from one plant to another
+10.Demand is valid only for the month – it cannot be back fulfilled. If demand is not fulfilled in a month they are considered as lost sales
+11.There is no starting inventory at any plant and ending inventory after last month will not be considered for revenue recognition
+
+Submission File-
+1.(Done) demand_forecast.csv: Submission format for the demand forecast of the next 3 months. No negative values allowed
+2.manufacture_sequence.csv: Submission format for mentioning the production sequence for each line at every plant. Only product ids or blanks allowed in the sequence
+3.shipping_region.csv: Submission format for mentioning the shipped quantity at each region from each plant. No negative values allowed here as well
+
+
+Manufacture Sequence File-
+Plant	Line	Month	Day	Product_ID
+
+For each plant, line ,month and day, we need to set the product that will be produced.
+Files that are needed to be checked-
+1. Demand Forecast
+2. Production cost
+3. Production capacity
+4. Changeover time and cost
+5. Delivery
+6. Demand Price
+
+Steps-
+1. Identify the products that will be sold.(Products with demand more than 0)
+2. On the basis of the region, figure out the region where product has demand.(Where demand_price > 0)(Also sort on the basis of the demand_price.)
+3. Now figure out plants from where the delivery cost to region is minimum.(Sort on basis of delivery cost)
+4. Now on basis of production_capacity figure out the most appropriate plant.
+5. Use demand forecast to find out what is the demand in the region.
+
+Shipping Region File-
+Plant	Region	Product_ID	Month	Shipping_to_region_quantity
+
+Quantity of product to be shipped to the region for a given month from the given plant is needed to be estimated.
+Files needed for preparing the shipping region file-
+1. Demand Forecast
+2. Delivery
+3. Demand Price
+4. Production Cost
+5. Production Capacity
+
+Steps-
+1. For each product
+	1.1 For each region and the month
+		1.1.1 If demand of product in region=0
+			-No action
+		1.1.2 If demand of product in region!=0
+			-Sort production units on basis of delivery cost
+			1.1.2.1 For each production unit(till demand is met)
+				-Check their production capacity and cost
+				-Identify plants with minimum sum of production cost and delivery cost. Arrange them in that order.
+				-Number of days plant has to work= Median(Changeover_days)+Demand/Production capacity.
+				-If plant is available for that many days, then assign that much quantity to the plant
+				-Otherwise, Assign the plant to submit as per the plant capacity i.e (days available-changeover)*production_cap
+				-Ask the other plant to submit the remaining quantity.
